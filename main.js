@@ -30,7 +30,7 @@ async function diffAssets({ pullRequest, cwd, usePrArtifacts }) {
 
   const fileDiffs = diffSizes(
     normaliseFingerprint(masterAssets),
-    normaliseFingerprint(prAssets)
+    normaliseFingerprint(prAssets),
   );
 
   return fileDiffs;
@@ -57,7 +57,7 @@ ${body}`);
   }
 }
 
-async function run() {
+export default async function run() {
   try {
     const { myToken, cwd, usePrArtifacts } = getActionInputs();
 
@@ -66,10 +66,8 @@ async function run() {
     const pullRequest = await getPullRequest(context, octokit);
     const fileDiffs = await diffAssets({ pullRequest, cwd, usePrArtifacts });
 
-    await commentOnPR({ octokit, pullRequest, fileDiffs })
+    await commentOnPR({ octokit, pullRequest, fileDiffs });
   } catch (error) {
     setFailed(error.message);
   }
 }
-
-export default run;
