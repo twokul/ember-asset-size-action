@@ -2,6 +2,7 @@ import { getInput, debug, setFailed } from '@actions/core';
 import { exec } from '@actions/exec';
 import { GitHub, context } from '@actions/github';
 import path from 'path';
+import yn from 'yn';
 
 import {
   normaliseFingerprint,
@@ -13,7 +14,7 @@ import {
 
 async function getActionInputs() {
   const workingDirectory = getInput('working-directory', { required: false });
-  const usePrArtifacts = getInput('use-pr-artifacts', { required: false });
+  const usePrArtifacts = yn(getInput('use-pr-artifacts', { required: false }));
   const token = getInput('repo-token', { required: true });
   
   const cwd = path.join(process.cwd(), workingDirectory);
