@@ -16,7 +16,7 @@ async function getActionInputs() {
   const workingDirectory = getInput('working-directory', { required: false });
   const usePrArtifacts = yn(getInput('use-pr-artifacts', { required: false }));
   const token = getInput('repo-token', { required: true });
-  
+
   const cwd = path.join(process.cwd(), workingDirectory);
   debug(`cwd: ${cwd}`);
   debug(`token: ${token}`);
