@@ -4,8 +4,10 @@
   "private": true,
   "description": "Show asset size changes on ",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "package": "ncc build index.js --license licenses.txt",
+    "build": "rm -rf dist *.tsbuildinfo && tsc",
+    "package": "npm run build && ncc build dist/index.js --license licenses.txt",
     "test": "cross-env NODE_ENV=TEST GITHUB_REPOSITORY=simplabs/ember-asset-size-action mocha -r esm"
   },
   "repository": {
@@ -24,16 +26,18 @@
     "@actions/exec": "^1.0.4",
     "@actions/github": "^4.0.0",
     "asset-size-reporter": "^0.1.0",
-    "esm": "^3.2.25",
     "pretty-bytes": "^5.0.0",
     "yn": "^4.0.0"
   },
   "devDependencies": {
+    "@octokit/types": "^6.12.2",
+    "@types/mocha": "^5.2.7",
     "chai": "^4.2.0",
     "cross-env": "^7.0.2",
     "eslint": "^5.9.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.22.0",
-    "mocha": "^6.2.3"
+    "mocha": "^6.2.3",
+    "typescript": "^4.2.3"
   }
 }

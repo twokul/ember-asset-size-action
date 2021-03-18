@@ -1,3 +1,4 @@
+// @ts-nocheck
 import prettyBytes from 'pretty-bytes';
 import { exec } from '@actions/exec';
 import assetSizeReporter from 'asset-size-reporter';

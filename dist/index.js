@@ -2,303 +2,225 @@ module.exports =
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 3868:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+/***/ 7718:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
-// eslint-disable-next-line
-;
-module.exports = __nccwpck_require__(6989);
+"use strict";
 
-if (process.env.NODE_ENV !== 'TEST') {
-  // execute the run() function
-  module.exports.default();
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+// @ts-nocheck
+const core_1 = __nccwpck_require__(7970);
+const exec_1 = __nccwpck_require__(4556);
+const github_1 = __nccwpck_require__(503);
+const path_1 = __nccwpck_require__(5622);
+const yn_1 = __nccwpck_require__(2862);
+const helpers_1 = __nccwpck_require__(2005);
+async function getActionInputs() {
+    const workingDirectory = core_1.getInput('working-directory', { required: false });
+    const usePrArtifacts = yn_1.default(core_1.getInput('use-pr-artifacts', { required: false }));
+    const token = core_1.getInput('repo-token', { required: true });
+    const cwd = path_1.default.join(process.cwd(), workingDirectory);
+    core_1.debug(`cwd: ${cwd}`);
+    core_1.debug(`token: ${token}`);
+    return { token, cwd, usePrArtifacts };
 }
+async function diffAssets({ pullRequest, cwd, usePrArtifacts }) {
+    const prAssets = await helpers_1.getAssetSizes({ cwd, build: !usePrArtifacts });
+    await exec_1.exec(`git checkout ${pullRequest.base.sha}`, [], { cwd });
+    const masterAssets = await helpers_1.getAssetSizes({ cwd, build: true });
+    const fileDiffs = helpers_1.diffSizes(helpers_1.normaliseFingerprint(masterAssets), helpers_1.normaliseFingerprint(prAssets));
+    return fileDiffs;
+}
+async function commentOnPR({ octokit, pullRequest, fileDiffs }) {
+    const uniqueCommentIdentifier = '_Created by ember-asset-size-action_';
+    const body = `${helpers_1.buildOutputText(fileDiffs)}\n\n${uniqueCommentIdentifier}`;
+    const updateExistingComment = core_1.getInput('update-comments', { required: false });
+    let existingComment = false;
+    if (updateExistingComment) {
+        const { data: comments } = await octokit.issues.listComments({
+            owner: github_1.context.repo.owner,
+            repo: github_1.context.repo.repo,
+            issue_number: pullRequest.number,
+        });
+        existingComment = comments.find(comment => comment.user.login === 'github-actions[bot]' && comment.body.endsWith(uniqueCommentIdentifier));
+    }
+    try {
+        if (existingComment) {
+            await octokit.issues.updateComment({
+                owner: github_1.context.repo.owner,
+                repo: github_1.context.repo.repo,
+                comment_id: existingComment.id,
+                body,
+            });
+        }
+        else {
+            await octokit.issues.createComment({
+                owner: github_1.context.repo.owner,
+                repo: github_1.context.repo.repo,
+                issue_number: pullRequest.number,
+                body,
+            });
+        }
+    }
+    catch (e) {
+        console.error(e);
+        console.log(`Could not create a comment automatically. This could be because github does not allow writing from actions on a fork.
+
+See https://github.community/t5/GitHub-Actions/Actions-not-working-correctly-for-forks/td-p/35545 for more information.`);
+        console.log(`Copy and paste the following into a comment yourself if you want to still show the diff:
+
+${body}`);
+    }
+}
+async function run() {
+    try {
+        const { token, cwd, usePrArtifacts } = await getActionInputs();
+        const octokit = new github_1.GitHub(token);
+        const pullRequest = await helpers_1.getPullRequest(github_1.context, octokit);
+        const fileDiffs = await diffAssets({ pullRequest, cwd, usePrArtifacts });
+        await commentOnPR({ octokit, pullRequest, fileDiffs });
+    }
+    catch (error) {
+        console.error(error);
+        core_1.setFailed(error.message);
+    }
+}
+exports.default = run;
 
 
 /***/ }),
 
-/***/ 6989:
-/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
+/***/ 2005:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
-// ESM COMPAT FLAG
-__nccwpck_require__.r(__webpack_exports__);
 
-// EXPORTS
-__nccwpck_require__.d(__webpack_exports__, {
-  "default": () => /* binding */ run
-});
-
-// EXTERNAL MODULE: ./node_modules/esm/esm.js
-var esm = __nccwpck_require__(2255);
-// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
-var core = __nccwpck_require__(7970);
-// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
-var exec = __nccwpck_require__(4556);
-// EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
-var github = __nccwpck_require__(503);
-// EXTERNAL MODULE: external "path"
-var external_path_ = __nccwpck_require__(5622);
-var external_path_default = /*#__PURE__*/__nccwpck_require__.n(external_path_);
-
-// EXTERNAL MODULE: ./node_modules/yn/index.js
-var yn = __nccwpck_require__(2862);
-var yn_default = /*#__PURE__*/__nccwpck_require__.n(yn);
-
-// EXTERNAL MODULE: ./node_modules/pretty-bytes/index.js
-var pretty_bytes = __nccwpck_require__(8628);
-var pretty_bytes_default = /*#__PURE__*/__nccwpck_require__.n(pretty_bytes);
-
-// EXTERNAL MODULE: ./node_modules/asset-size-reporter/src/asset-size-reporter.js
-var asset_size_reporter = __nccwpck_require__(9628);
-var asset_size_reporter_default = /*#__PURE__*/__nccwpck_require__.n(asset_size_reporter);
-
-// EXTERNAL MODULE: external "fs"
-var external_fs_ = __nccwpck_require__(5747);
-var external_fs_default = /*#__PURE__*/__nccwpck_require__.n(external_fs_);
-
-// CONCATENATED MODULE: ./lib/helpers.js
-
-
-
-
-
-
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.buildOutputText = exports.getAssetSizes = exports.getPullRequest = exports.diffSizes = exports.normaliseFingerprint = void 0;
+// @ts-nocheck
+const pretty_bytes_1 = __nccwpck_require__(8628);
+const exec_1 = __nccwpck_require__(4556);
+const asset_size_reporter_1 = __nccwpck_require__(9628);
+const fs_1 = __nccwpck_require__(5747);
+const path_1 = __nccwpck_require__(5622);
 function normaliseFingerprint(obj) {
-  const normalisedObject = {};
-
-  Object.keys(obj).forEach((key) => {
-    const match = key.match(/dist\/assets\/([\w-]+)-\w{32}(.\w+)/);
-
-    if (match) {
-      const [, fileName, extension] = match;
-      normalisedObject[`${fileName}${extension}`] = obj[key];
-    } else {
-      console.log(`Ignoring file ${key} as it does not match known asset file pattern`);
-    }
-  });
-
-  return normalisedObject;
+    const normalisedObject = {};
+    Object.keys(obj).forEach((key) => {
+        const match = key.match(/dist\/assets\/([\w-]+)-\w{32}(.\w+)/);
+        if (match) {
+            const [, fileName, extension] = match;
+            normalisedObject[`${fileName}${extension}`] = obj[key];
+        }
+        else {
+            console.log(`Ignoring file ${key} as it does not match known asset file pattern`);
+        }
+    });
+    return normalisedObject;
 }
-
+exports.normaliseFingerprint = normaliseFingerprint;
 function diffSizes(baseBranch, pullRequestBranch) {
-  const diffObject = {};
-
-  Object.keys(pullRequestBranch).forEach((key) => {
-    const newSize = pullRequestBranch[key];
-    const originSize = baseBranch[key];
-
-    // new file i.e. does not exist in origin
-    if (!originSize) {
-      diffObject[key] = {
-        raw: newSize.raw,
-        gzip: newSize.gzip,
-      };
-    } else {
-      diffObject[key] = {
-        raw: newSize.raw - originSize.raw,
-        gzip: newSize.gzip - originSize.gzip,
-      };
-    }
-
-    // TODO cater for deleted files
-  });
-
-  return diffObject;
+    const diffObject = {};
+    Object.keys(pullRequestBranch).forEach((key) => {
+        const newSize = pullRequestBranch[key];
+        const originSize = baseBranch[key];
+        // new file i.e. does not exist in origin
+        if (!originSize) {
+            diffObject[key] = {
+                raw: newSize.raw,
+                gzip: newSize.gzip,
+            };
+        }
+        else {
+            diffObject[key] = {
+                raw: newSize.raw - originSize.raw,
+                gzip: newSize.gzip - originSize.gzip,
+            };
+        }
+        // TODO cater for deleted files
+    });
+    return diffObject;
 }
-
-
+exports.diffSizes = diffSizes;
 async function getPullRequest(context, octokit) {
-  const pr = context.payload.pull_request;
-
-  if (!pr) {
-    console.log('Could not get pull request number from context, exiting');
-    return;
-  }
-
-  const { data: pullRequest } = await octokit.pulls.get({
-    owner: pr.base.repo.owner.login,
-    repo: pr.base.repo.name,
-    pull_number: pr.number,
-  });
-
-  return pullRequest;
-}
-
-async function getAssetSizes({ cwd, build = true }) {
-  if (build) {
-    if (external_fs_default().existsSync(external_path_default().join(cwd, 'yarn.lock'))) {
-      await (0,exec.exec)('yarn --frozen-lockfile', [], { cwd });
-    } else {
-      await (0,exec.exec)('npm ci', [], { cwd });
+    const pr = context.payload.pull_request;
+    if (!pr) {
+        console.log('Could not get pull request number from context, exiting');
+        return;
     }
-
-    await (0,exec.exec)('npx ember build -prod', [], { cwd });
-  }
-
-  let prAssets;
-
-  await asset_size_reporter_default()({
-    patterns: ['dist/assets/**.js', 'dist/assets/**.css'],
-    json: true,
-    console: {
-      log(text) {
-        prAssets = JSON.parse(text);
-      },
-    },
-    cwd,
-  });
-
-  return prAssets;
+    const { data: pullRequest } = await octokit.pulls.get({
+        owner: pr.base.repo.owner.login,
+        repo: pr.base.repo.name,
+        pull_number: pr.number,
+    });
+    return pullRequest;
 }
-
-
+exports.getPullRequest = getPullRequest;
+async function getAssetSizes({ cwd, build = true }) {
+    if (build) {
+        if (fs_1.default.existsSync(path_1.default.join(cwd, 'yarn.lock'))) {
+            await exec_1.exec('yarn --frozen-lockfile', [], { cwd });
+        }
+        else {
+            await exec_1.exec('npm ci', [], { cwd });
+        }
+        await exec_1.exec('npx ember build -prod', [], { cwd });
+    }
+    let prAssets;
+    await asset_size_reporter_1.default({
+        patterns: ['dist/assets/**.js', 'dist/assets/**.css'],
+        json: true,
+        console: {
+            log(text) {
+                prAssets = JSON.parse(text);
+            },
+        },
+        cwd,
+    });
+    return prAssets;
+}
+exports.getAssetSizes = getAssetSizes;
 function reportTable(data) {
-  let table = `File | raw | gzip
+    let table = `File | raw | gzip
 --- | --- | ---
 `;
-  data.forEach((item) => {
-    table += `${item.file}|${pretty_bytes_default()(item.raw, { signed: true })}|${pretty_bytes_default()(item.gzip, { signed: true })}\n`;
-  });
-
-  return table;
-}
-
-function buildOutputText(output) {
-  const files = Object.keys(output).map(key => ({
-    file: key,
-    raw: output[key].raw,
-    gzip: output[key].gzip,
-  }));
-
-  const bigger = [];
-  const smaller = [];
-  const same = [];
-
-  files.forEach((file) => {
-    if (file.raw > 0) {
-      bigger.push(file);
-    } else if (file.raw < 0) {
-      smaller.push(file);
-    } else {
-      same.push(file);
-    }
-  });
-
-  let outputText = '';
-
-  if (bigger.length) {
-    outputText += `Files that got Bigger 🚨:\n\n${reportTable(bigger)}\n`;
-  }
-
-  if (smaller.length) {
-    outputText += `Files that got Smaller 🎉:\n\n${reportTable(smaller)}\n\n`;
-  }
-
-  if (same.length) {
-    outputText += `Files that stayed the same size 🤷‍:\n\n${reportTable(same)}\n\n`;
-  }
-
-  return outputText.trim();
-}
-
-// CONCATENATED MODULE: ./main.js
-
-
-
-
-
-
-
-
-
-async function getActionInputs() {
-  const workingDirectory = (0,core.getInput)('working-directory', { required: false });
-  const usePrArtifacts = yn_default()((0,core.getInput)('use-pr-artifacts', { required: false }));
-  const token = (0,core.getInput)('repo-token', { required: true });
-
-  const cwd = external_path_default().join(process.cwd(), workingDirectory);
-  (0,core.debug)(`cwd: ${cwd}`);
-  (0,core.debug)(`token: ${token}`);
-
-  return { token, cwd, usePrArtifacts };
-}
-
-async function diffAssets({ pullRequest, cwd, usePrArtifacts }) {
-  const prAssets = await getAssetSizes({ cwd, build: !usePrArtifacts });
-
-  await (0,exec.exec)(`git checkout ${pullRequest.base.sha}`, [], { cwd });
-
-  const masterAssets = await getAssetSizes({ cwd, build: true });
-
-  const fileDiffs = diffSizes(
-    normaliseFingerprint(masterAssets),
-    normaliseFingerprint(prAssets),
-  );
-
-  return fileDiffs;
-}
-
-async function commentOnPR({ octokit, pullRequest, fileDiffs }) {
-  const uniqueCommentIdentifier = '_Created by ember-asset-size-action_';
-  const body = `${buildOutputText(fileDiffs)}\n\n${uniqueCommentIdentifier}`;
-
-  const updateExistingComment = (0,core.getInput)('update-comments', { required: false });
-  let existingComment = false;
-
-  if (updateExistingComment) {
-    const { data: comments } = await octokit.issues.listComments({
-      owner: github.context.repo.owner,
-      repo: github.context.repo.repo,
-      issue_number: pullRequest.number,
+    data.forEach((item) => {
+        table += `${item.file}|${pretty_bytes_1.default(item.raw, { signed: true })}|${pretty_bytes_1.default(item.gzip, { signed: true })}\n`;
     });
-    existingComment = comments.find(comment => comment.user.login === 'github-actions[bot]' && comment.body.endsWith(uniqueCommentIdentifier));
-  }
-
-  try {
-    if (existingComment) {
-      await octokit.issues.updateComment({
-        owner: github.context.repo.owner,
-        repo: github.context.repo.repo,
-        comment_id: existingComment.id,
-        body,
-      });
-    } else {
-      await octokit.issues.createComment({
-        owner: github.context.repo.owner,
-        repo: github.context.repo.repo,
-        issue_number: pullRequest.number,
-        body,
-      });
+    return table;
+}
+function buildOutputText(output) {
+    const files = Object.keys(output).map(key => ({
+        file: key,
+        raw: output[key].raw,
+        gzip: output[key].gzip,
+    }));
+    const bigger = [];
+    const smaller = [];
+    const same = [];
+    files.forEach((file) => {
+        if (file.raw > 0) {
+            bigger.push(file);
+        }
+        else if (file.raw < 0) {
+            smaller.push(file);
+        }
+        else {
+            same.push(file);
+        }
+    });
+    let outputText = '';
+    if (bigger.length) {
+        outputText += `Files that got Bigger 🚨:\n\n${reportTable(bigger)}\n`;
     }
-  } catch (e) {
-    console.error(e);
-    console.log(`Could not create a comment automatically. This could be because github does not allow writing from actions on a fork.
-
-See https://github.community/t5/GitHub-Actions/Actions-not-working-correctly-for-forks/td-p/35545 for more information.`);
-
-    console.log(`Copy and paste the following into a comment yourself if you want to still show the diff:
-
-${body}`);
-  }
+    if (smaller.length) {
+        outputText += `Files that got Smaller 🎉:\n\n${reportTable(smaller)}\n\n`;
+    }
+    if (same.length) {
+        outputText += `Files that stayed the same size 🤷‍:\n\n${reportTable(same)}\n\n`;
+    }
+    return outputText.trim();
 }
-
-async function run() {
-  try {
-    const { token, cwd, usePrArtifacts } = await getActionInputs();
-
-    const octokit = new github.GitHub(token);
-
-    const pullRequest = await getPullRequest(github.context, octokit);
-    const fileDiffs = await diffAssets({ pullRequest, cwd, usePrArtifacts });
-
-    await commentOnPR({ octokit, pullRequest, fileDiffs });
-  } catch (error) {
-    console.error(error);
-
-    (0,core.setFailed)(error.message);
-  }
-}
+exports.buildOutputText = buildOutputText;
 
 
 /***/ }),
@@ -21289,14 +21211,6 @@ module.exports = function (str) {
 
 /***/ }),
 
-/***/ 2255:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-/* module decorator */ module = __nccwpck_require__.nmd(module);
-const e=(function(){return this||Function("return this")()})(),{apply:t,defineProperty:n}=Reflect,{freeze:r}=Object,{hasOwnProperty:l}=Object.prototype,o=Symbol.for,{type:i,versions:u}=process,{filename:a,id:s,parent:c}=module,_=x(u,"electron"),p=_&&"renderer"===i;let d="";"string"==typeof s&&s.startsWith("internal/")&&(d=q("internal/esm/loader"));const f=__nccwpck_require__(2282),{Script:m}=__nccwpck_require__(2184),{createCachedData:y,runInNewContext:h,runInThisContext:b}=m.prototype,{sep:g}=__nccwpck_require__(5622),{readFileSync:v}=__nccwpck_require__(5747),w=new f(s);function q(e){let t;try{const{internalBinding:n}=__nccwpck_require__(5945),r=n("natives");x(r,e)&&(t=r[e])}catch(e){}return"string"==typeof t?t:""}function x(e,n){return null!=e&&t(l,e,[n])}function D(){return M(require,w,T),w.exports}function O(e,t){return D()(e,t)}function j(e,t){try{return v(e,t)}catch(e){}return null}let C,F;w.filename=a,w.parent=c;let I="",S="";""!==d?(S=d,F={__proto__:null,filename:"esm.js"}):(I=__dirname+g+"node_modules"+g+".cache"+g+"esm",C=j(I+g+".data.blob"),S=j(__nccwpck_require__.ab + "loader.js","utf8"),null===C&&(C=void 0),null===S&&(S=""),F={__proto__:null,cachedData:C,filename:a,produceCachedData:"function"!=typeof y});const k=new m("const __global__ = this;(function (require, module, __shared__) { "+S+"\n});",F);let M,T;if(M=p?t(b,k,[{__proto__:null,filename:a}]):t(h,k,[{__proto__:null,global:e},{__proto__:null,filename:a}]),T=D(),""!==I){const{dir:e}=T.package;let t=e.get(I);if(void 0===t){let n=C;void 0===n&&(n=null),t={buffer:C,compile:new Map([["esm",{circular:0,code:null,codeWithTDZ:null,filename:null,firstAwaitOutsideFunction:null,firstReturnOutsideFunction:null,mtime:-1,scriptData:n,sourceType:1,transforms:0,yieldIndex:-1}]]),meta:new Map},e.set(I,t)}const{pendingScripts:n}=T;let r=n.get(I);void 0===r&&(r=new Map,n.set(I,r)),r.set("esm",k)}n(O,T.symbol.package,{__proto__:null,value:!0}),n(O,T.customInspectKey,{__proto__:null,value:()=>"esm enabled"}),n(O,o("esm:package"),{__proto__:null,value:!0}),r(O),module.exports=O;
-
-/***/ }),
-
 /***/ 8460:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -34944,14 +34858,6 @@ module.exports = eval("require")("encoding");
 
 /***/ }),
 
-/***/ 5945:
-/***/ ((module) => {
-
-module.exports = eval("require")("internal/bootstrap/loaders");
-
-
-/***/ }),
-
 /***/ 154:
 /***/ ((module) => {
 
@@ -35016,14 +34922,6 @@ module.exports = require("https");;
 
 /***/ }),
 
-/***/ 2282:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("module");;
-
-/***/ }),
-
 /***/ 1631:
 /***/ ((module) => {
 
@@ -35080,14 +34978,6 @@ module.exports = require("util");;
 
 /***/ }),
 
-/***/ 2184:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("vm");;
-
-/***/ }),
-
 /***/ 8761:
 /***/ ((module) => {
 
@@ -35131,46 +35021,6 @@ module.exports = require("zlib");;
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__nccwpck_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => module['default'] :
-/******/ 				() => module;
-/******/ 			__nccwpck_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__nccwpck_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__nccwpck_require__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop)
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__nccwpck_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/node module decorator */
 /******/ 	(() => {
 /******/ 		__nccwpck_require__.nmd = (module) => {
@@ -35186,6 +35036,6 @@ module.exports = require("zlib");;
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	return __nccwpck_require__(3868);
+/******/ 	return __nccwpck_require__(7718);
 /******/ })()
 ;
