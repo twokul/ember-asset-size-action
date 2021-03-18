@@ -70,7 +70,7 @@ async function getAssetSizes({ cwd, build = true }) {
         await exec_1.exec('npx ember build -prod', [], { cwd });
     }
     let prAssets;
-    await asset_size_reporter_1.default({
+    await asset_size_reporter_1.assetSizeReporter({
         patterns: ['dist/assets/**.js', 'dist/assets/**.css'],
         json: true,
         console: {
