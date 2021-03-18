@@ -1,1 +1,1 @@
-export default function run(): Promise<void>;
+export declare function run(): Promise<void>;

@@ -84,7 +84,7 @@ ${body}`);
   }
 }
 
-export default async function run() {
+export async function run() {
   try {
     const { token, cwd, usePrArtifacts } = await getActionInputs();
 
@@ -100,3 +100,5 @@ export default async function run() {
     setFailed(error.message);
   }
 }
+
+run();

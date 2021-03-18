@@ -8,6 +8,7 @@ module.exports =
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.run = void 0;
 // @ts-nocheck
 const core_1 = __nccwpck_require__(7970);
 const exec_1 = __nccwpck_require__(4556);
@@ -85,7 +86,8 @@ async function run() {
         core_1.setFailed(error.message);
     }
 }
-exports.default = run;
+exports.run = run;
+run();
 
 
 /***/ }),
