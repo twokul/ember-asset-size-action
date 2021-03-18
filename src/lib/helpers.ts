@@ -1,7 +1,7 @@
 // @ts-nocheck
 import * as prettyBytes from 'pretty-bytes';
 import { exec } from '@actions/exec';
-import assetSizeReporter from 'asset-size-reporter';
+import * as assetSizeReporter from 'asset-size-reporter';
 import * as fs from 'fs';
 import * as path from 'path';
 
