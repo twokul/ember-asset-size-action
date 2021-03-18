@@ -1,9 +1,9 @@
 // @ts-nocheck
 import { getInput, debug, setFailed } from '@actions/core';
 import { exec } from '@actions/exec';
-import { GitHub, context } from '@actions/github';
-import path from 'path';
-import yn from 'yn';
+import { getOctokit, context } from '@actions/github';
+import * as path from 'path';
+import * as yn from 'yn';
 
 import {
   normaliseFingerprint,
@@ -88,7 +88,7 @@ export async function run() {
   try {
     const { token, cwd, usePrArtifacts } = await getActionInputs();
 
-    const octokit = new GitHub(token);
+    const octokit = getOctokit(token);
 
     const pullRequest = await getPullRequest(context, octokit);
     const fileDiffs = await diffAssets({ pullRequest, cwd, usePrArtifacts });

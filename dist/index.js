@@ -13,14 +13,14 @@ exports.run = void 0;
 const core_1 = __nccwpck_require__(7970);
 const exec_1 = __nccwpck_require__(4556);
 const github_1 = __nccwpck_require__(503);
-const path_1 = __nccwpck_require__(5622);
-const yn_1 = __nccwpck_require__(2862);
+const path = __nccwpck_require__(5622);
+const yn = __nccwpck_require__(2862);
 const helpers_1 = __nccwpck_require__(2005);
 async function getActionInputs() {
     const workingDirectory = core_1.getInput('working-directory', { required: false });
-    const usePrArtifacts = yn_1.default(core_1.getInput('use-pr-artifacts', { required: false }));
+    const usePrArtifacts = yn(core_1.getInput('use-pr-artifacts', { required: false }));
     const token = core_1.getInput('repo-token', { required: true });
-    const cwd = path_1.default.join(process.cwd(), workingDirectory);
+    const cwd = path.join(process.cwd(), workingDirectory);
     core_1.debug(`cwd: ${cwd}`);
     core_1.debug(`token: ${token}`);
     return { token, cwd, usePrArtifacts };
@@ -76,7 +76,7 @@ ${body}`);
 async function run() {
     try {
         const { token, cwd, usePrArtifacts } = await getActionInputs();
-        const octokit = new github_1.GitHub(token);
+        const octokit = github_1.getOctokit(token);
         const pullRequest = await helpers_1.getPullRequest(github_1.context, octokit);
         const fileDiffs = await diffAssets({ pullRequest, cwd, usePrArtifacts });
         await commentOnPR({ octokit, pullRequest, fileDiffs });
@@ -100,11 +100,11 @@ run();
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.buildOutputText = exports.getAssetSizes = exports.getPullRequest = exports.diffSizes = exports.normaliseFingerprint = void 0;
 // @ts-nocheck
-const pretty_bytes_1 = __nccwpck_require__(8628);
+const prettyBytes = __nccwpck_require__(8628);
 const exec_1 = __nccwpck_require__(4556);
 const asset_size_reporter_1 = __nccwpck_require__(9628);
-const fs_1 = __nccwpck_require__(5747);
-const path_1 = __nccwpck_require__(5622);
+const fs = __nccwpck_require__(5747);
+const path = __nccwpck_require__(5622);
 function normaliseFingerprint(obj) {
     const normalisedObject = {};
     Object.keys(obj).forEach((key) => {
@@ -159,7 +159,7 @@ async function getPullRequest(context, octokit) {
 exports.getPullRequest = getPullRequest;
 async function getAssetSizes({ cwd, build = true }) {
     if (build) {
-        if (fs_1.default.existsSync(path_1.default.join(cwd, 'yarn.lock'))) {
+        if (fs.existsSync(path.join(cwd, 'yarn.lock'))) {
             await exec_1.exec('yarn --frozen-lockfile', [], { cwd });
         }
         else {
@@ -186,7 +186,7 @@ function reportTable(data) {
 --- | --- | ---
 `;
     data.forEach((item) => {
-        table += `${item.file}|${pretty_bytes_1.default(item.raw, { signed: true })}|${pretty_bytes_1.default(item.gzip, { signed: true })}\n`;
+        table += `${item.file}|${prettyBytes(item.raw, { signed: true })}|${prettyBytes(item.gzip, { signed: true })}\n`;
     });
     return table;
 }

@@ -1,9 +1,9 @@
 // @ts-nocheck
-import prettyBytes from 'pretty-bytes';
+import * as prettyBytes from 'pretty-bytes';
 import { exec } from '@actions/exec';
 import assetSizeReporter from 'asset-size-reporter';
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export function normaliseFingerprint(obj) {
   const normalisedObject = {};

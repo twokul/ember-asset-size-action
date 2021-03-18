@@ -2,11 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildOutputText = exports.getAssetSizes = exports.getPullRequest = exports.diffSizes = exports.normaliseFingerprint = void 0;
 // @ts-nocheck
-const pretty_bytes_1 = require("pretty-bytes");
+const prettyBytes = require("pretty-bytes");
 const exec_1 = require("@actions/exec");
 const asset_size_reporter_1 = require("asset-size-reporter");
-const fs_1 = require("fs");
-const path_1 = require("path");
+const fs = require("fs");
+const path = require("path");
 function normaliseFingerprint(obj) {
     const normalisedObject = {};
     Object.keys(obj).forEach((key) => {
@@ -61,7 +61,7 @@ async function getPullRequest(context, octokit) {
 exports.getPullRequest = getPullRequest;
 async function getAssetSizes({ cwd, build = true }) {
     if (build) {
-        if (fs_1.default.existsSync(path_1.default.join(cwd, 'yarn.lock'))) {
+        if (fs.existsSync(path.join(cwd, 'yarn.lock'))) {
             await exec_1.exec('yarn --frozen-lockfile', [], { cwd });
         }
         else {
@@ -88,7 +88,7 @@ function reportTable(data) {
 --- | --- | ---
 `;
     data.forEach((item) => {
-        table += `${item.file}|${pretty_bytes_1.default(item.raw, { signed: true })}|${pretty_bytes_1.default(item.gzip, { signed: true })}\n`;
+        table += `${item.file}|${prettyBytes(item.raw, { signed: true })}|${prettyBytes(item.gzip, { signed: true })}\n`;
     });
     return table;
 }
