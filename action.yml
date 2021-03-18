@@ -8,6 +8,8 @@ inputs:
   repo-token:
     description: 'The GITHUB_TOKEN secret'
     required: true
+  update-comments:
+    description: 'Optional: Set to true to update existing asset size comment instead of creating a new one each time'
   working-directory:
     description: 'The directory to run the action from'
     required: false
