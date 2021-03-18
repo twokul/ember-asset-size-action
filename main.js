@@ -1,3 +1,4 @@
+import 'esm';
 import { getInput, debug, setFailed } from '@actions/core';
 import { exec } from '@actions/exec';
 import { GitHub, context } from '@actions/github';

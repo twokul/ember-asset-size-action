@@ -29,6 +29,8 @@ __nccwpck_require__.d(__webpack_exports__, {
   "default": () => /* binding */ run
 });
 
+// EXTERNAL MODULE: ./node_modules/esm/esm.js
+var esm = __nccwpck_require__(2255);
 // EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
 var core = __nccwpck_require__(7970);
 // EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
@@ -201,6 +203,7 @@ function buildOutputText(output) {
 }
 
 // CONCATENATED MODULE: ./main.js
+
 
 
 
@@ -21286,6 +21289,14 @@ module.exports = function (str) {
 
 /***/ }),
 
+/***/ 2255:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+/* module decorator */ module = __nccwpck_require__.nmd(module);
+const e=(function(){return this||Function("return this")()})(),{apply:t,defineProperty:n}=Reflect,{freeze:r}=Object,{hasOwnProperty:l}=Object.prototype,o=Symbol.for,{type:i,versions:u}=process,{filename:a,id:s,parent:c}=module,_=x(u,"electron"),p=_&&"renderer"===i;let d="";"string"==typeof s&&s.startsWith("internal/")&&(d=q("internal/esm/loader"));const f=__nccwpck_require__(2282),{Script:m}=__nccwpck_require__(2184),{createCachedData:y,runInNewContext:h,runInThisContext:b}=m.prototype,{sep:g}=__nccwpck_require__(5622),{readFileSync:v}=__nccwpck_require__(5747),w=new f(s);function q(e){let t;try{const{internalBinding:n}=__nccwpck_require__(5945),r=n("natives");x(r,e)&&(t=r[e])}catch(e){}return"string"==typeof t?t:""}function x(e,n){return null!=e&&t(l,e,[n])}function D(){return M(require,w,T),w.exports}function O(e,t){return D()(e,t)}function j(e,t){try{return v(e,t)}catch(e){}return null}let C,F;w.filename=a,w.parent=c;let I="",S="";""!==d?(S=d,F={__proto__:null,filename:"esm.js"}):(I=__dirname+g+"node_modules"+g+".cache"+g+"esm",C=j(I+g+".data.blob"),S=j(__nccwpck_require__.ab + "loader.js","utf8"),null===C&&(C=void 0),null===S&&(S=""),F={__proto__:null,cachedData:C,filename:a,produceCachedData:"function"!=typeof y});const k=new m("const __global__ = this;(function (require, module, __shared__) { "+S+"\n});",F);let M,T;if(M=p?t(b,k,[{__proto__:null,filename:a}]):t(h,k,[{__proto__:null,global:e},{__proto__:null,filename:a}]),T=D(),""!==I){const{dir:e}=T.package;let t=e.get(I);if(void 0===t){let n=C;void 0===n&&(n=null),t={buffer:C,compile:new Map([["esm",{circular:0,code:null,codeWithTDZ:null,filename:null,firstAwaitOutsideFunction:null,firstReturnOutsideFunction:null,mtime:-1,scriptData:n,sourceType:1,transforms:0,yieldIndex:-1}]]),meta:new Map},e.set(I,t)}const{pendingScripts:n}=T;let r=n.get(I);void 0===r&&(r=new Map,n.set(I,r)),r.set("esm",k)}n(O,T.symbol.package,{__proto__:null,value:!0}),n(O,T.customInspectKey,{__proto__:null,value:()=>"esm enabled"}),n(O,o("esm:package"),{__proto__:null,value:!0}),r(O),module.exports=O;
+
+/***/ }),
+
 /***/ 8460:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -34933,6 +34944,14 @@ module.exports = eval("require")("encoding");
 
 /***/ }),
 
+/***/ 5945:
+/***/ ((module) => {
+
+module.exports = eval("require")("internal/bootstrap/loaders");
+
+
+/***/ }),
+
 /***/ 154:
 /***/ ((module) => {
 
@@ -34997,6 +35016,14 @@ module.exports = require("https");;
 
 /***/ }),
 
+/***/ 2282:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("module");;
+
+/***/ }),
+
 /***/ 1631:
 /***/ ((module) => {
 
@@ -35050,6 +35077,14 @@ module.exports = require("url");;
 
 "use strict";
 module.exports = require("util");;
+
+/***/ }),
+
+/***/ 2184:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("vm");;
 
 /***/ }),
 
