@@ -3,9 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "description": "Show asset size changes on ",
-  "main": "dist/index.js",
+  "main": "index.js",
   "scripts": {
-    "package": "ncc build index.js --license licenses.txt",
     "test": "cross-env NODE_ENV=TEST GITHUB_REPOSITORY=simplabs/ember-asset-size-action mocha -r esm"
   },
   "repository": {
