@@ -14,26 +14,15 @@ describe('Build output Text', function () {
 
     const text = buildOutputText(diff);
 
-    expect(text).to.equal(`Files that got Bigger 🚨:
+    expect(text).to.equal(`### Asset Size Comparison
 
-File | raw | gzip
---- | --- | ---
-auto-import-fastboot.js|+221 kB|+76.7 kB
-
-Files that got Smaller 🎉:
-
-File | raw | gzip
---- | --- | ---
-ember-website.js|-3 kB|-1.01 kB
-vendor.js|-388 kB|-130 kB
-
-
-Files that stayed the same size 🤷‍:
-
-File | raw | gzip
---- | --- | ---
-ember-website-fastboot.js| 0 B| 0 B
-ember-website.css| 0 B| 0 B
-vendor.css| 0 B| 0 B`);
+Asset | Raw | Gzip | Status
+--- | --- | --- | ---
+auto-import-fastboot.js|+221 kB|+76.7 kB|⛔️ Size Increased
+ember-website.js|-3 kB|-1.01 kB|✂️ Size Decreased
+ember-website-fastboot.js| 0 B| 0 B|✅ No Change
+vendor.js|-388 kB|-130 kB|✂️ Size Decreased
+ember-website.css| 0 B| 0 B|✅ No Change
+vendor.css| 0 B| 0 B|✅ No Change`);
   });
 });
