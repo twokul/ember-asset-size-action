@@ -16,23 +16,26 @@ import {
 async function getActionInputs() {
   const workingDirectory = getInput('working-directory', { required: false });
   const usePrArtifacts = yn(getInput('use-pr-artifacts', { required: false }));
+  const patterns = getInput('patterns', { required: false }) || ['dist/assets/**.js', 'dist/assets/**.css'];
   const token = getInput('repo-token', { required: true });
+
+  console.log('PATTERNS', patterns);
 
   const cwd = path.join(process.cwd(), workingDirectory);
   debug(`cwd: ${cwd}`);
   debug(`token: ${token}`);
 
-  return { token, cwd, usePrArtifacts };
+  return { token, cwd, usePrArtifacts, patterns };
 }
 
-async function diffAssets({ pullRequest, cwd, usePrArtifacts }) {
-  const prAssets = await getAssetSizes({ cwd, build: !usePrArtifacts });
+async function diffAssets({ pullRequest, cwd, usePrArtifacts, patterns }) {
+  const prAssets = await getAssetSizes({ cwd, build: !usePrArtifacts, patterns });
 
   console.log('PR ASSETS', prAssets);
 
   await exec(`git checkout ${pullRequest.base.sha}`, [], { cwd });
 
-  const masterAssets = await getAssetSizes({ cwd, build: true });
+  const masterAssets = await getAssetSizes({ cwd, build: true, patterns });
 
   console.log('MASTER ASSETS', masterAssets);
 
@@ -96,12 +99,12 @@ ${body}`);
 
 export default async function run() {
   try {
-    const { token, cwd, usePrArtifacts } = await getActionInputs();
+    const { token, cwd, usePrArtifacts, patterns } = await getActionInputs();
 
     const octokit = getOctokit(token);
 
     const pullRequest = await getPullRequest(context, octokit);
-    const fileDiffs = await diffAssets({ pullRequest, cwd, usePrArtifacts });
+    const fileDiffs = await diffAssets({ pullRequest, cwd, usePrArtifacts, patterns });
 
     await commentOnPR({ octokit, pullRequest, fileDiffs });
   } catch (error) {
