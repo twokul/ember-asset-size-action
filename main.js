@@ -28,22 +28,14 @@ async function getActionInputs() {
 async function diffAssets({ pullRequest, cwd, usePrArtifacts }) {
   const prAssets = await getAssetSizes({ cwd, build: !usePrArtifacts });
 
-  console.log('PR ASSETS', prAssets);
-
   await exec(`git checkout ${pullRequest.base.sha}`, [], { cwd });
 
   const masterAssets = await getAssetSizes({ cwd, build: true });
-
-  console.log('MASTER ASSETS', masterAssets);
 
   const fileDiffs = diffSizes(
     normaliseFingerprint(masterAssets),
     normaliseFingerprint(prAssets),
   );
-
-  console.log('NORMALISED FINGERPRINT MASTER ASSETS', normaliseFingerprint(masterAssets));
-  console.log('NORMALISED FINGERPRINT PR ASSETS', normaliseFingerprint(prAssets));
-  console.log('FILE DIFFS', fileDiffs);
 
   return fileDiffs;
 }
@@ -63,8 +55,6 @@ async function commentOnPR({ octokit, pullRequest, fileDiffs }) {
     });
     existingComment = comments.find(comment => comment.user.login === 'github-actions[bot]' && comment.body.endsWith(uniqueCommentIdentifier));
   }
-
-  console.log('COMMENT BODY', body);
 
   try {
     if (existingComment) {
