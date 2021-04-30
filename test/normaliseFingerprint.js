@@ -5,6 +5,8 @@ import { normaliseFingerprint } from '../lib/helpers';
 describe('Normalise Fingerprint', function () {
   it('should remove fingerprints from file names', function () {
     const assets = {
+      'dist/assets/auto-import.js': { raw: 221142, gzip: 76707, brotli: null },
+      'dist/assets/minified-assets-6e4105c0-a9b2-11eb-a353-e96816ccf564.js': { raw: 221142, gzip: 76707, brotli: null },
       'dist/assets/auto-import-fastboot-12a5d6f444be918dea6cd3914e6c0fc7.js': { raw: 221142, gzip: 76707, brotli: null },
       'dist/assets/chunk.c63c634560451d1b7290.js': { raw: 221142, gzip: 76707, brotli: null },
       'dist/assets/ember-website-fastboot-1d9d1bfbc74315a1a7f3621398cec1ab.js': { raw: 956, gzip: 414, brotli: null },
@@ -17,7 +19,10 @@ describe('Normalise Fingerprint', function () {
     const normalisedAssets = normaliseFingerprint(assets);
 
     expect(normalisedAssets).to.deep.equal({
+      'auto-import.js': { raw: 221142, gzip: 76707, brotli: null },
+      'minified-assets.js': { raw: 221142, gzip: 76707, brotli: null },
       'auto-import-fastboot.js': { raw: 221142, gzip: 76707, brotli: null },
+      'chunk.js': { raw: 221142, gzip: 76707, brotli: null },
       'ember-website-fastboot.js': { raw: 956, gzip: 414, brotli: null },
       'ember-website.js': { raw: 389351, gzip: 71886, brotli: null },
       'vendor.js': { raw: 2717593, gzip: 796082, brotli: null },
